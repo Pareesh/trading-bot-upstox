@@ -1,5 +1,5 @@
 {
-  "name": "stockbroker",
+  "name": "trading-bot-upstox",
   "version": "1.0.0",
   "private": true,
   "workspaces": [

@@ -1,8 +1,8 @@
 import { getMarketQuotes, getPositions, placeOrder, getHistoricalCandlesDaily } from "./upstoxClient.js";
 
 // Risk Management Constants to minimize loss & secure minimal profits
-const STOP_LOSS_PCT = 0.02;        // Strict 0.5% max loss per trade
-const MINIMAL_PROFIT_PCT = 0.02;    // 1% profit lock-in
+const STOP_LOSS_PCT = 0.02;        // Strict 2% max loss per trade
+const MINIMAL_PROFIT_PCT = 0.02;    // 2% profit lock-in
 const STOCK_QUANTITY_BUY_LIMIT = 2;       // Stock quantity to buy
 
 function getDelta(buyPrice, sellPrice, quantity) {
@@ -56,7 +56,8 @@ function evaluateSells(positions, quotes, companies, options) {
     const averagePrice = pos.average_price;
     
     // Net PnL securely calculated after taking an estimated 0.2% round-trip tax/brokerage hit
-    const {delta, netPnL, sellPrice} = calculateNetPnL(averagePrice, currentPrice, pos.quantity);
+    const delta = getDelta(averagePrice, currentPrice, pos.quantity);
+    const netPnLPct = calculateNetPnL(averagePrice, currentPrice, pos.quantity);
 
     if (delta <= -STOP_LOSS_PCT) {
       sells.push({
