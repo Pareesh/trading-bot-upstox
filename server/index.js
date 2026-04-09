@@ -4,13 +4,12 @@ import cors from "cors";
 import helmet from "helmet";
 import 'dotenv/config';
 import rateLimit from "express-rate-limit";
-import { config } from "./config.js";
+import config from "./config.js";
 import { authRouter } from "./routes/auth.js";
 import { apiRouter } from "./routes/api.js";
 import { startMarketScheduler } from "./services/scheduler.js";
 
 const clientStaticDir = path.resolve(process.cwd(), "./ui");
-const domain = process.env.NODE_ENV === "PRODUCTION" ? "0.0.0.0" : "localhost";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -25,7 +24,7 @@ app.use(express.json({ limit: "32kb" }));
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: config.nodeEnv === "production" ? 200 : 2000,
+    max: config.environment === "production" ? 200 : 2000,
     standardHeaders: true,
     legacyHeaders: false,
   })
@@ -44,14 +43,14 @@ app.use("/api", apiRouter);
 
 app.use((err, _req, res, _next) => {
   console.error(err); // Log full error server-side
-  const message = process.env.NODE_ENV === 'production' 
+  const message = config.environment === 'production' 
     ? 'Internal server error'
     : err.message;
   res.status(500).json({ error: message });
 });
 
-app.listen(config.port, domain, () => {
-  console.log(`API http://${domain}:${config.port}`);
+app.listen(config.port, config.host, () => {
+  console.log(`API http://${config.host}:${config.port}`);
   try {
     startMarketScheduler();
   } catch (e) {

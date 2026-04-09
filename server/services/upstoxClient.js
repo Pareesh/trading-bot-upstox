@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
-import { config } from "../config.js";
+import config from "../config.js";
 
 const AUTH_BASE = "https://api.upstox.com/v2";
 const API_BASE = "https://api.upstox.com/v2";

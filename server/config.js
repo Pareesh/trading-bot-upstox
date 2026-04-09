@@ -1,19 +1,10 @@
-import dotenv from "dotenv";
+import 'dotenv/config';
 import path from "path";
 
-dotenv.config();
-
-function required(name, fallback = undefined) {
-  const v = process.env[name] ?? fallback;
-  if (v === undefined || v === "") {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return v;
-}
-
-export const config = {
+export default {
+  host: process.env.HOST || "localhost",
   port: Number(process.env.PORT) || 4000,
-  nodeEnv: process.env.NODE_ENV || "development",
+  environment: process.env.ENVIRONMENT || "development",
   frontendOrigin: process.env.FRONTEND_ORIGIN || "http://localhost:5173",
   upstox: {
     apiKey: process.env.UPSTOX_API_KEY || "",
@@ -25,8 +16,3 @@ export const config = {
   dataDir: process.env.DATA_DIR || path.join("..", ".data"),
   tradingEnabled: process.env.LIVE_TRADING_ENABLED === "true"
 };
-
-export function assertUpstoxConfigured() {
-  required("UPSTOX_API_KEY", config.upstox.apiKey);
-  required("UPSTOX_API_SECRET", config.upstox.apiSecret);
-}

@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { config, assertUpstoxConfigured } from "../config.js";
+import config from "../config.js";
+import { assertUpstoxConfigured } from "../middleware/auth.js";
 import { buildAuthorizationUrl, exchangeCodeForToken, getUserProfile } from "../services/upstoxClient.js";
 import { saveAccessToken, loadAccessToken, clearAccessToken } from "../services/tokenStore.js";
 
@@ -19,18 +20,18 @@ authRouter.get("/upstox/callback", async (req, res) => {
   const code = req.query.code;
   const err = req.query.error;
   if (err) {
-    return res.redirect(`${config.frontendOrigin}/?error=${encodeURIComponent(err)}`);
+    return res.redirect(`/?error=${encodeURIComponent(err)}`);
   }
   if (!code || typeof code !== "string") {
-    return res.redirect(`${config.frontendOrigin}/?error=${encodeURIComponent("missing_code")}`);
+    return res.redirect(`/?error=${encodeURIComponent("missing_code")}`);
   }
   try {
     assertUpstoxConfigured();
     const token = await exchangeCodeForToken(code);
     await saveAccessToken(token);
-    return res.redirect(`${config.frontendOrigin}/?connected=1`);
+    return res.redirect(`/?connected=1`);
   } catch (e) {
-    return res.redirect(`${config.frontendOrigin}/?error=${encodeURIComponent(e.message)}`);
+    return res.redirect(`/?error=${encodeURIComponent(e.message)}`);
   }
 });
 

@@ -1,4 +1,5 @@
 import { loadAccessToken } from "../services/tokenStore.js";
+import config from "../config.js";
 
 export async function requireUpstoxSession(req, res, next) {
   try {
@@ -13,6 +14,20 @@ export async function requireUpstoxSession(req, res, next) {
   }
 }
 
+function required(name, fallback = undefined) {
+  const v = process.env[name] ?? fallback;
+  if (v === undefined || v === "") {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return v;
+}
+
+
+export function assertUpstoxConfigured() {
+  required("UPSTOX_API_KEY", config.upstox.apiKey);
+  required("UPSTOX_API_SECRET", config.upstox.apiSecret);
+}
+
 export function verifySameOrigin(req, res, next) {
   const origin = req.get("Origin");
   const referer = req.get("Referer");
@@ -23,7 +38,7 @@ export function verifySameOrigin(req, res, next) {
   const ok =
     (origin && origin === allowed) ||
     (referer && referer.startsWith(allowed)) ||
-    process.env.NODE_ENV !== "production";
+    config.environment !== "production";
   if (!ok) {
     return res.status(403).json({ error: "Origin not allowed." });
   }

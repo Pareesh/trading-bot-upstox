@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { config } from "../config.js";
+import config from "../config.js";
 import { requireUpstoxSession, verifySameOrigin } from "../middleware/auth.js";
 import { resolveNifty50Instruments } from "../services/nifty50.js";
 import { computeStrategySignals, executeStrategyOrders } from "../services/strategy.js";
