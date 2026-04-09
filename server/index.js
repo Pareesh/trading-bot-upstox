@@ -3,15 +3,18 @@ import path from "path";
 import cors from "cors";
 import helmet from "helmet";
 import 'dotenv/config';
-import rateLimit from "express-rate-limit";
 import config from "./config.js";
+import rateLimit from "express-rate-limit";
+import { fileURLToPath } from "url";
 import { authRouter } from "./routes/auth.js";
 import { apiRouter } from "./routes/api.js";
 import { startMarketScheduler } from "./services/scheduler.js";
 
-const clientStaticDir = path.resolve(process.cwd(), "./ui");
-
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.set("trust proxy", 1);
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(
@@ -30,12 +33,6 @@ app.use(
   })
 );
 
-app.use(express.static(clientStaticDir));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(clientStaticDir, "index.html"));
-});
-
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api/auth", authRouter);
@@ -47,6 +44,12 @@ app.use((err, _req, res, _next) => {
     ? 'Internal server error'
     : err.message;
   res.status(500).json({ error: message });
+});
+
+app.use(express.static(path.join(__dirname, "ui")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "ui/index.html"));
 });
 
 app.listen(config.port, config.host, () => {
