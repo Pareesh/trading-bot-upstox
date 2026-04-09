@@ -9,7 +9,7 @@ import { authRouter } from "./routes/auth.js";
 import { apiRouter } from "./routes/api.js";
 import { startMarketScheduler } from "./services/scheduler.js";
 
-const clientStaticDir = path.resolve(process.cwd(), "../client/dist");
+const clientStaticDir = path.resolve(process.cwd(), "./ui");
 const domain = process.env.NODE_ENV === "PRODUCTION" ? "0.0.0.0" : "localhost";
 
 const app = express();

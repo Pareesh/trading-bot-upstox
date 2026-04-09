@@ -1,9 +1,5 @@
 node_modules/
-dist/
+client/
 .env
-.env.local
-server/.env
-client/.env
-server/.data/
 *.log
 .data

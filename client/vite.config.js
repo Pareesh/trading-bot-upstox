@@ -12,4 +12,9 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    outDir: '../server/ui', // Default is 'ui'
+    // Optional: empty the directory before building
+    emptyOutDir: true 
+  }
 })
