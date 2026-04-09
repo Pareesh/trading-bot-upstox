@@ -2,13 +2,15 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import helmet from "helmet";
+import 'dotenv/config';
 import rateLimit from "express-rate-limit";
 import { config } from "./config.js";
 import { authRouter } from "./routes/auth.js";
 import { apiRouter } from "./routes/api.js";
 import { startMarketScheduler } from "./services/scheduler.js";
 
-const clientStaticDir = path.resolve(import.meta.dirname, "../client/dist");
+const clientStaticDir = path.resolve(process.cwd(), "../client/dist");
+const domain = process.env.NODE_ENV === "PRODUCTION" ? "0.0.0.0" : "localhost";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -48,8 +50,8 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: message });
 });
 
-app.listen(config.port, () => {
-  console.log(`API http://localhost:${config.port}`);
+app.listen(config.port, domain, () => {
+  console.log(`API http://${domain}:${config.port}`);
   try {
     startMarketScheduler();
   } catch (e) {
